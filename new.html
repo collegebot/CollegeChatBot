@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>College Timetable & Exam Timetable Bot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        *{
+            box-sizing:border-box;
+        }
+
+        body{
+            margin:0;
+            font-family:'Segoe UI',Arial,sans-serif;
+            background:linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            padding:20px;
+        }
+
+        .container{
+            width:100%;
+            max-width:1100px;
+            background:rgba(255,255,255,0.96);
+            border-radius:24px;
+            overflow:hidden;
+            box-shadow:0 25px 60px rgba(0,0,0,0.35);
+            backdrop-filter:blur(10px);
+        }
+
+        h1{
+            margin:0;
+            padding:22px;
+            background:linear-gradient(90deg,#1565c0,#42a5f5);
+            color:white;
+            text-align:center;
+            font-size:32px;
+            letter-spacing:1px;
+        }
+
+        .top-bar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:15px;
+            padding:18px 20px;
+            background:#eef5ff;
+            border-bottom:1px solid #dbeafe;
+            flex-wrap:wrap;
+        }
+
+        .top-bar label{
+            font-weight:700;
+            color:#1e3a8a;
+        }
+
+        #branchSelect{
+            padding:12px 14px;
+            border-radius:12px;
+            border:1px solid #cbd5e1;
+            background:white;
+            font-size:15px;
+            min-width:140px;
+            outline:none;
+        }
+
+        .quick-buttons{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap;
+        }
+
+        .quick-buttons button,
+        .marks-btn,
+        .input-area button{
+            border:none;
+            border-radius:12px;
+            padding:12px 18px;
+            cursor:pointer;
+            font-weight:600;
+            transition:0.3s;
+        }
+
+        .quick-buttons button{
+            background:#dbeafe;
+            color:#1d4ed8;
+        }
+
+        .quick-buttons button:hover{
+            background:#bfdbfe;
+            transform:translateY(-2px);
+        }
+
+        .marks-btn{
+            background:linear-gradient(90deg,#f59e0b,#f97316);
+            color:white;
+        }
+
+        .marks-btn:hover,
+        .input-area button:hover{
+            transform:translateY(-2px);
+            box-shadow:0 10px 20px rgba(0,0,0,0.15);
+        }
+
+        #chatBox{
+            height:560px;
+            overflow-y:auto;
+            padding:24px;
+            background:linear-gradient(to bottom,#f8fbff,#eef6ff);
+        }
+
+        #chatBox::-webkit-scrollbar{
+            width:8px;
+        }
+
+        #chatBox::-webkit-scrollbar-thumb{
+            background:#93c5fd;
+            border-radius:10px;
+        }
+
+        .message{
+            padding:16px 18px;
+            margin-bottom:18px;
+            border-radius:18px;
+            max-width:88%;
+            line-height:1.7;
+            animation:fadeIn 0.25s ease;
+            box-shadow:0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .user{
+            background:linear-gradient(135deg,#4ade80,#22c55e);
+            color:white;
+            margin-left:auto;
+            border-bottom-right-radius:4px;
+        }
+
+        .bot{
+            background:white;
+            border:1px solid #dbeafe;
+            color:#1e293b;
+            border-bottom-left-radius:4px;
+        }
+
+        .bot h3{
+            margin-top:0;
+            color:#1d4ed8;
+        }
+
+        .input-area{
+            display:flex;
+            gap:12px;
+            padding:18px;
+            background:white;
+            border-top:1px solid #e5e7eb;
+        }
+
+        #userInput{
+            flex:1;
+            padding:16px;
+            border:1px solid #cbd5e1;
+            border-radius:14px;
+            font-size:16px;
+            outline:none;
+            transition:0.3s;
+        }
+
+        #userInput:focus{
+            border-color:#3b82f6;
+            box-shadow:0 0 0 4px rgba(59,130,246,0.15);
+        }
+
+        .input-area button{
+            background:linear-gradient(90deg,#2563eb,#1d4ed8);
+            color:white;
+            min-width:110px;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:12px;
+            font-size:13px;
+            overflow:hidden;
+            border-radius:14px;
+        }
+
+        th,td{
+            border:1px solid #d1d5db;
+            padding:10px;
+            text-align:center;
+        }
+
+        th{
+            background:linear-gradient(90deg,#2563eb,#3b82f6);
+            color:white;
+            position:sticky;
+            top:0;
+        }
+
+        tr:nth-child(even){
+            background:#f8fafc;
+        }
+
+        a{
+            color:#2563eb;
+            font-weight:600;
+        }
+
+        @keyframes fadeIn{
+            from{
+                opacity:0;
+                transform:translateY(8px);
+            }
+            to{
+                opacity:1;
+                transform:translateY(0);
+            }
+        }
+
+        @media(max-width:768px){
+            .top-bar{
+                flex-direction:column;
+                align-items:flex-start;
+            }
+
+            .quick-buttons{
+                width:100%;
+            }
+
+            .quick-buttons button,
+            .marks-btn{
+                width:100%;
+            }
+
+            .input-area{
+                flex-direction:column;
+            }
+
+            .input-area button{
+                width:100%;
+            }
+
+            table{
+                display:block;
+                overflow-x:auto;
+                white-space:nowrap;
+            }
+
+            .message{
+                max-width:100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+    <h1>🎓 College Timetable & Exam Bot</h1>
+
+    <div class="top-bar">
+        <div>
+            <label>Select Branch:</label>
+            <select id="branchSelect">
+                <option value="CB">CB</option>
+                <option value="CE">CE</option>
+                <option value="CM">CM</option>
+                <option value="CSE">CSE</option>
+                <option value="DS">DS</option>
+                <option value="ECE">ECE</option>
+                <option value="EEE">EEE</option>
+                <option value="IT">IT</option>
+                <option value="ME">ME</option>
+            </select>
+        </div>
+
+        <div class="quick-buttons">
+            <button onclick="document.getElementById('userInput').value='show mid timetable';sendMessage();">Mid Timetable</button>
+            <button onclick="document.getElementById('userInput').value='show sem timetable';sendMessage();">Sem Timetable</button>
+            <button onclick="document.getElementById('userInput').value='dbms exam date';sendMessage();">DBMS Date</button>
+        </div>
+
+        <button class="marks-btn" onclick="window.open('https://internalmarks7cal-netizen.github.io/InternalMarksCal/','_blank')">
+            Internal Marks Calculator
+        </button>
+    </div>
+
+    <div id="chatBox">
+        <div class="message bot">
+            <h3>Welcome 👋</h3>
+            Ask me things like:<br><br>
+            • show mid timetable<br>
+            • show sem timetable<br>
+            • dbms exam date<br>
+            • operating systems exam date<br>
+            • internal marks calculator
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Ask your timetable question...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+function addMessage(text, type){
+    const div = document.createElement("div");
+    div.className = "message " + type;
+    div.innerHTML = text;
+    document.getElementById("chatBox").appendChild(div);
+    document.getElementById("chatBox").scrollTop = document.getElementById("chatBox").scrollHeight;
+}
+
+const midTimetableHTML = `
+<h3>Mid Examination Timetable</h3>
+<table>
+<tr>
+    <th>Date</th>
+    <th>CSE</th>
+    <th>IT</th>
+    <th>DS</th>
+</tr>
+<tr>
+    <td>09/04/2026</td>
+    <td>Environmental Science</td>
+    <td>Constitution of India</td>
+    <td>Environmental Science</td>
+</tr>
+<tr>
+    <td>13/04/2026</td>
+    <td>Organization</td>
+    <td>Organization</td>
+    <td>Organization</td>
+</tr>
+<tr>
+    <td>15/04/2026</td>
+    <td>Automata Theory & Formal Languages</td>
+    <td>Operating Systems</td>
+    <td>Operating Systems</td>
+</tr>
+<tr>
+    <td>16/04/2026</td>
+    <td>Web Technologies</td>
+    <td>Front End Web Technologies</td>
+    <td>Client-Side Web Technologies</td>
+</tr>
+<tr>
+    <td>17/04/2026</td>
+    <td>Database Management Systems</td>
+    <td>Database Management Systems</td>
+    <td>Database Management Systems</td>
+</tr>
+<tr>
+    <td>18/04/2026</td>
+    <td>Design & Analysis of Algorithms</td>
+    <td>Design & Analysis of Algorithms</td>
+    <td>Design & Analysis of Algorithms</td>
+</tr>
+</table>
+<p><b>Mid Exam Time:</b> 11:00 AM to 12:30 PM</p>
+`;
+
+const semTimetableHTML = `
+<h3>Bapatla Engineering College - 2/4 B.Tech 4th Semester Semester Examination Timetable</h3>
+<table>
+<tr>
+    <th>Date & Day</th>
+    <th>CB</th>
+    <th>CE</th>
+    <th>CM</th>
+    <th>CSE</th>
+    <th>DS</th>
+    <th>ECE</th>
+    <th>EEE</th>
+    <th>IT</th>
+    <th>ME</th>
+</tr>
+<tr>
+    <td>21/04/2026<br>Tuesday</td>
+    <td>24CB401<br>Computer Networks</td>
+    <td>24CE401<br>Concrete Technology</td>
+    <td>24CM401<br>Computer Organization</td>
+    <td>24CS401<br>Computer Organization</td>
+    <td>24DS401<br>Computer Organization</td>
+    <td>24EC401<br>Quantum Technologies</td>
+    <td>24EE401<br>Control Systems</td>
+    <td>24IT401<br>Computer Organization</td>
+    <td>24ME401<br>Materials Engineering</td>
+</tr>
+<tr>
+    <td>23/04/2026<br>Thursday</td>
+    <td>24CB402<br>Operating Systems</td>
+    <td>24CE402<br>Mechanics of Materials</td>
+    <td>24CM402<br>Operating Systems</td>
+    <td>24CS402<br>Automata Theory & Formal Languages</td>
+    <td>24DS402<br>Operating Systems</td>
+    <td>24EC402<br>Signals and Systems</td>
+    <td>24EE402<br>Linear Integrated Circuits</td>
+    <td>24IT402<br>Operating Systems</td>
+    <td>24ME402<br>Metal Cutting & Machine Tools</td>
+</tr>
+<tr>
+    <td>25/04/2026<br>Saturday</td>
+    <td>24CB403<br>Client Side Web Technologies</td>
+    <td>24CE403<br>Hydraulics & Hydraulic Machines</td>
+    <td>24CM403<br>Client Side Web Technologies</td>
+    <td>24CS403<br>Web Technologies</td>
+    <td>24DS403<br>Client Side Web Technologies</td>
+    <td>24EC403<br>Electromagnetic Waves & Transmission Lines</td>
+    <td>24EE403<br>Electrical Machines - II</td>
+    <td>24IT403<br>Front End Web Development</td>
+    <td>24ME403<br>Kinematics of Machines</td>
+</tr>
+<tr>
+    <td>27/04/2026<br>Monday</td>
+    <td>24CB404<br>Database Management Systems</td>
+    <td>24CE404<br>Environmental Engineering</td>
+    <td>24CM404<br>Database Management Systems</td>
+    <td>24CS404<br>Database Management Systems</td>
+    <td>24DS404<br>Database Management Systems</td>
+    <td>24EC404<br>Analog and Digital Communications</td>
+    <td>24EE404<br>Signals & Systems</td>
+    <td>24IT404<br>Database Management Systems</td>
+    <td>24ME404<br>Thermal Engineering</td>
+</tr>
+<tr>
+    <td>29/04/2026<br>Wednesday</td>
+    <td>24CB405<br>Design and Analysis of Algorithms</td>
+    <td>24CE405<br>Soil Mechanics</td>
+    <td>24CM405<br>Design and Analysis of Algorithms</td>
+    <td>24CS405<br>Design and Analysis of Algorithms</td>
+    <td>24DS405<br>Design and Analysis of Algorithms</td>
+    <td>24EC405<br>Analog Integrated Circuits</td>
+    <td>24EE405<br>Generation and Transmission</td>
+    <td>24IT405<br>Design and Analysis of Algorithms</td>
+    <td>24ME405<br>Industrial Engineering & Management</td>
+</tr>
+</table>
+<p><b>Semester Exam Time:</b> 9:30 AM to 12:30 PM</p>
+<p><b>Practical Examinations Commence From:</b> 30/04/2026</p>
+<p><b>Note:</b> No student will be allowed into the examination hall without valid identity card, hall ticket and after 09:30 AM.</p>
+`;
+
+function sendMessage(){
+    const branch = document.getElementById("branchSelect").value;
+    let input = document.getElementById("userInput").value.toLowerCase().trim();
+
+    if(input === "") return;
+
+    addMessage(input, "user");
+
+    let reply = "Sorry, I could not understand. Try asking: show mid timetable or show sem timetable";
+
+    if(input.includes("show mid timetable") || input.includes("mid exam") || input.includes("mid timetable")){
+        reply = "<h3>Selected Branch: " + branch + "</h3>" + midTimetableHTML;
+    }
+    else if(input.includes("show sem timetable") || input.includes("semester exam") || input.includes("sem exam") || input.includes("semester timetable")){
+        reply = "<h3>Selected Branch: " + branch + "</h3>" + semTimetableHTML;
+    }
+    else if(input.includes("show exam timetable") || input.includes("time table") || input.includes("timetable")){
+        reply = "<b>Select one:</b><br><br>• show mid timetable<br>• show sem timetable";
+    }
+    else if(input.includes("dbms")){
+        reply = "Database Management Systems exam is on 17/04/2026 (Friday) from 11:00 AM to 12:30 PM.";
+    }
+    else if(input.includes("web") || input.includes("front end")){
+        reply = "Web Technologies / Front End Web Technologies exam is on 16/04/2026 (Thursday) from 11:00 AM to 12:30 PM.";
+    }
+    else if(input.includes("operating systems") || input.includes("os")){
+        reply = "Operating Systems exam is on 15/04/2026 (Wednesday) from 11:00 AM to 12:30 PM.";
+    }
+    else if(input.includes("daa") || input.includes("algorithm")){
+        reply = "Design & Analysis of Algorithms exam is on 18/04/2026 (Saturday) from 11:00 AM to 12:30 PM.";
+    }
+    else if(input.includes("environmental science")){
+        reply = "Environmental Science exam is on 09/04/2026 (Thursday) from 11:00 AM to 12:30 PM.";
+    }
+    else if(input.includes("constitution of india")){
+        reply = "Constitution of India exam is on 09/04/2026 (Thursday) from 11:00 AM to 12:30 PM.";
+    }
+    else if(input.includes("internal marks") || input.includes("marks calculator") || input.includes("internal calculator")){
+        reply = `You can use the Internal Marks Calculator here:<br><br><a href="https://internalmarks7cal-netizen.github.io/InternalMarksCal/" target="_blank">https://internalmarks7cal-netizen.github.io/InternalMarksCal/</a>`;
+    }
+
+    setTimeout(() => {
+        addMessage(reply, "bot");
+    }, 300);
+
+    document.getElementById("userInput").value = "";
+}
+
+document.getElementById("userInput").addEventListener("keypress", function(e){
+    if(e.key === "Enter"){
+        sendMessage();
+    }
+});
+</script>
+
+</body>
+</html>
